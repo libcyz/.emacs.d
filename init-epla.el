@@ -14,7 +14,7 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
-;; settings 03
+
 (setq use-package-always-ensure t
       use-package-always-defer t
       use-package-always-demand nil
@@ -22,4 +22,4 @@
       use-package-verbose t)
 (require 'use-package)
 
-(provide 'init-epla.el)
+(provide 'init-epla)
