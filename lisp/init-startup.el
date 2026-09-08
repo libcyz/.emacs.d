@@ -10,6 +10,16 @@
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode 1)
 
+;; 不要默认进 *scratch*：有命令行文件就打开文件，否则打开当前目录
+(setq initial-scratch-message nil)
+(defun my/initial-buffer ()
+  (or (catch 'found
+        (dolist (buf (buffer-list))
+          (when (buffer-file-name buf)
+            (throw 'found buf))))
+      (dired-noselect default-directory)))
+(setq initial-buffer-choice #'my/initial-buffer)
+
 ;; 图形界面启动的 Emacs 经常没有这些目录
 (dolist (dir '("~/.local/bin" "~/.cargo/bin"))
   (let ((path (expand-file-name dir)))
