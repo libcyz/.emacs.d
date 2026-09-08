@@ -20,6 +20,12 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
+;; 新装包后重建 quickstart，否则下次启动会丢 autoload
+(defun my/refresh-package-quickstart (&rest _)
+  (when package-quickstart
+    (package-quickstart-refresh)))
+(advice-add 'package-install :after #'my/refresh-package-quickstart)
+
 (setq use-package-always-ensure t
       use-package-always-defer t
       use-package-always-demand nil
