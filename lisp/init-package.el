@@ -2,16 +2,16 @@
   :bind (("<M-up>" . drag-stuff-up)
          ("<M-down>" . drag-stuff-down)))
 
-;; 自动补全
+;; 自动补全：空闲后再加载，不挡启动
 (use-package company
-  :ensure t
-  :hook (after-init . global-company-mode)
+  :defer 1
   :config
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.1
         company-tooltip-align-annotations t
         company-selection-wrap-around t
         company-show-quick-access t)
+  (global-company-mode 1)
   :bind (:map company-active-map
               ("C-n" . company-select-next)
               ("C-p" . company-select-previous)
@@ -20,8 +20,9 @@
 
 ;; 快捷键提示：按 C-c l 后显示 LSP 命令
 (use-package which-key
-  :ensure t
-  :hook (after-init . which-key-mode))
+  :defer 1
+  :config
+  (which-key-mode))
 
 ;; 代码片段：rust-analyzer 的重构/补全需要 yasnippet
 (use-package yasnippet
@@ -41,17 +42,7 @@
 (use-package lsp-mode
   :ensure t
   :init
-  ;; 官方推荐前缀，也可用 "C-l"
   (setq lsp-keymap-prefix "C-c l")
-  ;; 官方 C/C++ 指南：加大进程读取缓冲，避免 clangd 等高产出服务器卡顿
-  (setq read-process-output-max (* 1024 1024))
-  ;; 图形界面启动的 Emacs 经常没有 ~/.local/bin，会找不到语言服务器
-  (dolist (dir '("~/.local/bin" "~/.cargo/bin"))
-    (let ((path (expand-file-name dir)))
-      (when (file-directory-p path)
-        (add-to-list 'exec-path path)
-        (unless (string-match-p (regexp-quote path) (or (getenv "PATH") ""))
-          (setenv "PATH" (concat path path-separator (getenv "PATH")))))))
   :hook ((c-mode . lsp-deferred)
          (c++-mode . lsp-deferred)
          (c-ts-mode . lsp-deferred)

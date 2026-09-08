@@ -1,4 +1,5 @@
-;; 软件源配置
+;;; init-epla.el --- 软件源 -*- lexical-binding: t -*-
+
 (setq package-check-signature nil)
 (require 'package)
 
@@ -7,19 +8,23 @@
         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
         ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")))
 
+(setq package-quickstart t)
+
 (unless (bound-and-true-p package--initialized)
   (package-initialize))
+
+;; 只在本地没有软件源索引时刷新，避免每次启动联网
 (unless package-archive-contents
   (package-refresh-contents))
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
-
 
 (setq use-package-always-ensure t
       use-package-always-defer t
       use-package-always-demand nil
       use-package-expand-minimally t
-      use-package-verbose t)
+      use-package-verbose nil)
 (require 'use-package)
 
 (provide 'init-epla)
