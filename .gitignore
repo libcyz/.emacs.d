@@ -26,4 +26,3 @@ custom.el
 .cache
 eshell/
 .lsp-session-v1
-package-quickstart.el
