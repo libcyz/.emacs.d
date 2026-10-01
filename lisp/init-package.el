@@ -78,38 +78,5 @@
   :ensure t
   :commands lsp-ui-mode)
 
-(use-package nerd-icons
-  :ensure t)
-
-;; VS Code 风格的侧边栏文件树
-(use-package treemacs
-  :ensure t
-  :bind (("C-x t t" . treemacs)
-         ("C-c t" . treemacs-select-window)
-         ([f8] . treemacs))
-  :config
-  (setq treemacs-width 28
-        treemacs-indentation 1
-        treemacs-display-in-side-window t
-        treemacs-follow-after-init t
-        treemacs-user-mode-line-format 'none
-        treemacs-user-header-line-format 'none)
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-git-mode 'deferred)
-  (treemacs-project-follow-mode t)
-  ;; 用更紧凑的 nerd-icons，替换默认 22px PNG
-  (require 'treemacs-nerd-icons)
-  (treemacs-nerd-icons-config))
-
-(use-package treemacs-nerd-icons
-  :ensure t
-  :after treemacs)
-
-;; LSP 的错误列表、符号树也进 treemacs
-(use-package lsp-treemacs
-  :ensure t
-  :after lsp-mode
-  :commands lsp-treemacs-errors-list)
 
 (provide 'init-package)
