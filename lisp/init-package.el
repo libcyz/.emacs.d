@@ -69,6 +69,10 @@
         lsp-rust-analyzer-display-chaining-hints t
         lsp-rust-analyzer-display-closure-return-type-hints t))
 
+;; Git 界面：C-x g 打开 magit 状态窗口
+(use-package magit
+  :bind ("C-x g" . magit-status))
+
 ;; 可选 UI：悬停文档、侧边诊断、定义/引用预览
 (use-package lsp-ui
   :ensure t
