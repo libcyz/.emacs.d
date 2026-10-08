@@ -28,4 +28,23 @@
       (unless (string-match-p (regexp-quote path) (or (getenv "PATH") ""))
         (setenv "PATH" (concat path path-separator (getenv "PATH")))))))
 
+;; 剪贴板：通过 wl-copy / xclip 与系统剪贴板同步（文本经 stdin 传入）
+(setq select-enable-clipboard t)
+
+(defun my/clipboard-copy (text)
+  "用 wl-copy 或 xclip 把 TEXT 复制到系统剪贴板。"
+  (let* ((cmd (cond ((executable-find "wl-copy") '("wl-copy"))
+                    ((executable-find "xclip") '("xclip" "-selection" "clipboard"))))
+         (proc (when cmd
+                 (make-process :name "clipboard-copy"
+                               :command cmd
+                               :buffer nil
+                               :connection-type 'pipe
+                               :noquery t))))
+    (when proc
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+(setq interprogram-cut-function #'my/clipboard-copy)
+
 (provide 'init-startup)
