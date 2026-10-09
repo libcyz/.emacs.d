@@ -83,7 +83,7 @@ See `yas-minor-mode' for more information on Yas minor mode.
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/cond-let-20260901.1107/cond-let-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/cond-let-20261001.1537/cond-let-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -125,7 +125,7 @@ disabled.
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/llama-20260925.1854/llama-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/llama-20261001.1538/llama-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -225,7 +225,7 @@ disabled.
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/with-editor-20260925.1502/with-editor-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/with-editor-20261003.1832/with-editor-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -334,7 +334,7 @@ else like the former.
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/transient-20260926.1400/transient-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/transient-20261001.1359/transient-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -628,7 +628,7 @@ Handles `let' <-> `let mut' and `&' <-> `&mut' (including `&self')." t)
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/posframe-20260829.203/posframe-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/posframe-20260930.2214/posframe-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -792,7 +792,7 @@ posframe instead of wrap.
 
  (14) OVERRIDE-PARAMETERS
 
-OVERRIDE-PARAMETERS is very powful, *all* the valid frame parameters
+OVERRIDE-PARAMETERS is very powerful, *all* the valid frame parameters
 used by posframe's frame can be overridden by it.
 
 NOTE: some `posframe-show' arguments are not frame parameters, so they
@@ -972,7 +972,7 @@ with the variables' values as arguments, which were recorded by
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/magit-20260926.1436/magit-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/magit-20261005.508/magit-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -3291,7 +3291,7 @@ This allows Dash symbols to be looked up with \\[info-lookup-symbol]." t)
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/lsp-mode-20260905.531/lsp-mode-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/lsp-mode-20261002.228/lsp-mode-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -4907,7 +4907,33 @@ See `drag-stuff-mode' for more information on Drag-Stuff mode.
 
 
 )
-(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/company-20260721.100/company-autoloads.el")(load-true-file-name load-file-name))
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/dashboard-20260809.447/dashboard-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'dashboard-open "dashboard" "\
+Open (or refresh) the *dashboard* buffer.
+
+(fn &rest _)" t)
+(autoload 'dashboard-setup-startup-hook "dashboard" "\
+Setup post initialization hooks unless a command line argument is provided.")
+(register-definition-prefixes "dashboard" '("dashboard-"))
+
+
+
+(register-definition-prefixes "dashboard-widgets" '("dashboard-" "recentf-list"))
+
+
+(provide 'dashboard-autoloads)
+
+
+)
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/company-20261005.348/company-autoloads.el")(load-true-file-name load-file-name))
 
 
 
@@ -5236,19 +5262,18 @@ shadow backends that come after it.  Recommended usages:
 	'(yasnippet compat cond-let llama with-editor transient
 		    spinner rich-minority smart-mode-line s rust-mode
 		    posframe markdown-mode magit-section magit lv dash
-		    f ht lsp-mode lsp-ui flycheck drag-stuff company
-		    catppuccin-theme)
+		    f ht lsp-mode lsp-ui flycheck drag-stuff dashboard
+		    company catppuccin-theme)
 	package-activated-list)))
 (progn
   (require 'info) (info-initialize)
   (setq Info-directory-list
 	(append
-	 '("/home/libcyz/.emacs.d/elpa/company-20260721.100"
-	   "/home/libcyz/.emacs.d/elpa/dash-20260221.1346"
-	   "/home/libcyz/.emacs.d/elpa/magit-20260926.1436"
+	 '("/home/libcyz/.emacs.d/elpa/dash-20260221.1346"
+	   "/home/libcyz/.emacs.d/elpa/magit-20261005.508"
 	   "/home/libcyz/.emacs.d/elpa/magit-section-20260926.1436"
-	   "/home/libcyz/.emacs.d/elpa/transient-20260926.1400"
-	   "/home/libcyz/.emacs.d/elpa/with-editor-20260925.1502"
+	   "/home/libcyz/.emacs.d/elpa/transient-20261001.1359"
+	   "/home/libcyz/.emacs.d/elpa/with-editor-20261003.1832"
 	   "/home/libcyz/.emacs.d/elpa/compat-31.1.0.0")
 	 Info-directory-list)))
 

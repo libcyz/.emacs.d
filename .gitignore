@@ -26,3 +26,4 @@ custom.el
 .cache
 eshell/
 .lsp-session-v1
+transient/

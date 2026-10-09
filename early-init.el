@@ -17,7 +17,8 @@
 
 ;; 第一帧就不要工具栏/滚动条，避免先画出来再关掉
 (setq default-frame-alist
-      (append '((tool-bar-lines . 0)
+      (append '((menu-bar-lines . 0)
+                (tool-bar-lines . 0)
                 (vertical-scroll-bars . nil)
                 (horizontal-scroll-bars . nil))
               default-frame-alist))
@@ -25,3 +26,6 @@
 ;; 启动时跳过特殊文件名处理，结束后恢复
 (defvar my/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
+
+;; GTK 标题栏跟随深色主题（必须在第一帧创建前设置）
+(setenv "GTK_THEME" "Adwaita:dark")

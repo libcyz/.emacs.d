@@ -53,6 +53,8 @@
          (python-ts-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred)
+  ;; 未启动 LSP 时 C-c l 直接启动；启动后由 lsp-mode 的前缀接管
+  :bind ("C-c l" . lsp)
   :config
   (setq lsp-idle-delay 0.1
         lsp-auto-guess-root t

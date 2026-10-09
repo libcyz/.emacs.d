@@ -9,6 +9,7 @@
 (require 'init-epla)
 (require 'init-startup)
 (require 'init-ui)
+(require 'init-dashboard)
 (require 'init-package)
 
 (when (file-exists-p custom-file)

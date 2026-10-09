@@ -6,18 +6,21 @@
 (set-keyboard-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8)
 
+(menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode 1)
 
-;; 不要默认进 *scratch*：有命令行文件就打开文件，否则打开当前目录
+;; 不要默认进 *scratch*：有命令行文件就打开文件，否则打开首页
 (setq initial-scratch-message nil)
 (defun my/initial-buffer ()
   (or (catch 'found
         (dolist (buf (buffer-list))
           (when (buffer-file-name buf)
             (throw 'found buf))))
-      (dired-noselect default-directory)))
+      (if (fboundp 'dashboard-open)
+          (progn (dashboard-refresh-buffer) (get-buffer "*dashboard*"))
+        (dired-noselect default-directory))))
 (setq initial-buffer-choice #'my/initial-buffer)
 
 ;; 图形界面启动的 Emacs 经常没有这些目录
