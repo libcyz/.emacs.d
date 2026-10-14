@@ -6,7 +6,7 @@
 ;; 底部快捷键：两行，每行 3 个
 (defconst my/dashboard-keys
   '(("C-x g" . "Magit")    ("C-c e" . "Lisp手册") ("C-c d" . "回首页")
-    ("M-."   . "跳到定义") ("M-,"   . "跳回来") ("M-;"   . "注释")))
+    ("M-."   . "跳到定义") ("M-,"   . "跳回来") ("C-c t"   . "翻译")))
 
 (defun my/dashboard-insert-keys ()
   (insert "\n")
