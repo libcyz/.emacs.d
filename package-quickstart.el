@@ -866,6 +866,193 @@ Benchmark tool for posframe." t)
 
 
 )
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/pdd-20250809.509/pdd-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'pdd-timeout "pdd" "\
+Create a new task that reject with timeout at time TIME.
+If TASK is not nil, reject it with timeout when timer triggered.
+TIME is same as the argument of `run-at-time'.
+
+(fn TIME &optional TASK)")
+(autoload 'pdd-delay "pdd" "\
+Create a promise that resolve VALUE after a specified TIME delay.
+
+Arguments:
+
+  TIME:  Same as the first argument of `run-at-time'
+         * Special case when this is t, pending forever until a signal reached
+  VALUE: Optional value to resolve with (can be a function)
+
+Returns:
+
+  A promise object that will resolve after the specified delay.
+
+Examples:
+
+  (setq t1 (pdd-delay 5 \"hello\"))
+  (pdd-then t1 (lambda (r) (message r)))
+  (pdd-signal t1 \\='cancel) ; the task can be cancelled by signal
+
+  (pdd-delay 3 (lambda () (message \"> %s\" (float-time))))
+
+(fn TIME &optional VALUE)")
+(function-put 'pdd-delay 'lisp-indent-function 1)
+(autoload 'pdd-interval "pdd" "\
+Create a new task that executes FUNC for COUNT times at every SECS.
+
+Use the return function of FUNC to explicitly give a resolve value to task and
+then exit it, otherwise the internal will finished with null value resolved.
+
+Also, the task can be cancelled by signal.
+
+Arguments:
+
+  SECS:  Seconds, a natnum number
+  COUNT: Number of times to execute FUNC. Can be:
+         * A number (execute N times)
+         * t (execute indefinitely), nil (only one time)
+         * A function with signature (&optional index) to check dynamically
+  FUNC:  Function to execute, with signature (&optional index return-fn timer):
+         * index: Current execution count (1-based)
+         * return-function: Function to call to stop future executions
+         * the timer itself
+  INIT:  Optional function to execute after timer is created (&optional timer)
+  DONE:  Optional function as resolved-fn when interval finished
+  FAIL:  Optional function as rejected-fn when interval failed
+  FINE:  Optional function always execute either success or fail
+
+Return a `pdd-task' object representing the scheduled task which has two values
+to be resolves: (index-of-interval-task-when-quit, return-value).
+
+Example:
+    (pdd-interval 1 5 (lambda () (print (float-time))))
+    (pdd-interval 1 5 (lambda (i) (message \"Seq #%d\" i)))
+    (pdd-interval 1 t (lambda (i ret)
+                        (if (> (random 10) 5)
+                          (funcall ret 666))
+                        (message \"Seq #%d\" i)))
+
+    ;; Task chain
+    (pdd-then
+        (pdd-interval 1 3
+          (lambda (i return)
+            (if (> (random 10) 6)
+                (funcall return 666)
+              (message \"Seq #%d\" i))))
+      (lambda (v i) (message \"round %s, return: %s\" i v))
+      (lambda (err) (message \"failed with error: %s\" err)))
+
+    ;; Same as above
+    (pdd-interval 1 3
+      (lambda (i return)
+        (if (> (random 10) 6)
+            (funcall return 666)
+          (message \"Seq #%d\" i)))
+      :done (lambda (v i) (message \"round %s, return: %s\" i v))
+      :fail (lambda (err) (message \"failed with error: %s\" err)))
+
+    ;; Cancel the task
+    (setq task1 (pdd-interval ...))
+    (pdd-signal task1 \\='cancel)
+
+(fn SECS COUNT FUNC &key INIT DONE FAIL FINE)")
+(function-put 'pdd-interval 'lisp-indent-function 2)
+(autoload 'pdd-exec "pdd" "\
+Create a promise-based task for CMD or run CMD synchronously.
+
+Arguments:
+
+  CMD:     Executable name (string, list, vector or t)
+           * if this is t, ARGS will be wrapped to shell command
+  ARGS:    List of command arguments
+           * Element can be string, symbol, list or vector
+           * They will be auto flatten and stringify, so write any way you want
+  ENV:     Extra process environment settings, string or list
+  AS:      Transform process output specify type, function or abbrev symbol
+           * If this is symbol line, split result to lines list
+           * If this is a function, use its return value as result
+           * Otherwise, just return the process output literally
+  INIT:    Post-creation callback (lambda (process))
+           * If type is pipe, and this is a string, then send it to proc pipe
+           * If this is a function, just do something to proc manually with it
+  PEEK:    Function to call in filter (lambda (string process))
+  DONE:    Success callback (lambda (output exit-status))
+  FAIL:    Error handler (lambda (error-message))
+  FINE:    Finalizer (lambda (process))
+  PIPE:    If t, use pipe connection type for process explicitly
+  CACHE:   Enable cache support if this is not nil
+           * If this is a cacher instance, use configs in it
+           * If this is a number or function, use this as ttl
+           * If this is a cons cell, should be (ttl &optional key store)
+  SYNC:    If t, execute synchronously. In this case `:peek' is ignored
+
+SYNC and FAIL can be dynamically bound with `pdd-sync' and `pdd-fail'.
+
+Smart cmd and args syntax:
+
+  (pdd-exec \"ls\" :done #\\='print)
+  (pdd-exec \"ls\" \"-a\" \"-l\" :done #\\='print)
+  (pdd-exec \"ls\" \"-a -l\" :done #\\='print)
+  (pdd-exec \"ls\" \\='(\"-a -l\")) ; those in list will not be splitted
+  (pdd-exec \\='ls \\='(-a -r) \\='-l :done #\\='print) ; auto stringify
+  (pdd-exec [ls -a -r] :done #\\='print) ; vector is like list
+  (pdd-exec \"ls -a -r\" :done #\\='print) ; shell command format string
+  (pdd-exec t \\='(tee \"~/aaa.txt\") :init \"pipe this to tee to save\")
+  (pdd-exec [ps aux] :sync t :pipe t :cache 5) ; other keywords
+
+Bind extra proc environments:
+
+  (pdd-exec \\='ls :env \"X=11\") ; a string for only one
+  (pdd-exec \\='ls :env \\='(\"X=11\" \"Y=22\")) ; a list for multiple
+  (pdd-exec \\='ls :env \\='((x . 11) (y . 22))) ; alist is recommended
+  (pdd-exec \\='ls :env \\='((xpath f1 f2) (x . 33))) ; paths auto join
+
+Callbacks for convenience:
+
+  (pdd-exec \\='(ls -l) :as \\='line :done \\='print)
+  (pdd-exec \\='(ls -l) :as \\='my-parse-fn :done \\='my-done-fn)
+
+  (pdd-exec \\='ls
+    :init (lambda (proc) (extra-init-job proc))
+    :done (lambda (res)  (message \"%s\" res))
+    :fail (lambda (err)  (message \"EEE: %s\" err))
+    :fine (lambda (proc) (extra-clean-up proc)))
+
+Play with task system:
+
+  (pdd-chain (pdd-exec [ip addr] :as \\='line)
+    (lambda (r) (cl-remove-if-not (lambda (e) (string-match-p \"^[0-9]\" e)) r))
+    (lambda (r) (mapcar (lambda (e) (cadr (split-string e \":\"))) r))
+    (lambda (r) (pdd-interval 1 5 (lambda (i) (message \"> %d\" i)) :done r))
+    (lambda (r) (message \"Get interface: %s\" (nth (random (length r)) r))))
+
+Return a ‘pdd-task’ object that can be canceled using ‘pdd-signal’ by default,
+or return the result directly when SYNC is t.
+
+(fn CMD &rest ARGS &key ENV AS PEEK INIT DONE FAIL FINE PIPE CACHE SYNC &allow-other-keys)")
+(function-put 'pdd-exec 'lisp-indent-function 'defun)
+(cl-defmethod pdd-retrieve (&rest args) "\
+Send an HTTP request using the `pdd-backend'.
+
+This is a convenience method that uses the default backend instead of
+requiring one to be specified explicitly.
+
+ARGS should be a plist where the first argument is the URL (string).
+Other supported arguments are the same as the generic `pdd' method." (let* ((args (if pdd-inhibit-keywords-absent args (apply #'pdd-complete-absent-keywords args))) (backend (pdd-ensure-default-backend args))) (unless (and backend (eieio-object-p backend) (object-of-class-p backend 'pdd-http-backend)) (user-error "Make sure `pdd-backend' is available.  eg:\n(setq pdd-backend (pdd-url-backend))\n\n\n")) (apply #'pdd backend args)))
+(register-definition-prefixes "pdd" '("pdd"))
+
+
+(provide 'pdd-autoloads)
+
+
+)
 (let* ((load-file-name "/home/libcyz/.emacs.d/elpa/markdown-mode-20260827.909/markdown-mode-autoloads.el")(load-true-file-name load-file-name))
 
 
@@ -4338,6 +4525,143 @@ omitted or nil, and toggle it if ARG is ‘toggle’.
 
 
 )
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/gt-20250727.230/gt-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'gt-translate "gt" "\
+Translate using `gt-default-translator'.
+
+Define your default translator like this:
+
+  (setq gt-default-translator
+    (gt-translator :engines (gt-bing-engine)))
+
+  (setq gt-default-translator
+    (gt-translator :taker (gt-taker :langs \\='(en fr) :text \\='sentence :prompt t)
+                   :engines (list (gt-google-engine) (gt-deepl-engine))
+                   :render (gt-buffer-render)))
+
+Or define several different translators and put them in `gt-preset-translators',
+and switch with `gt-setup' at any time.
+
+This is just a simple wrapper of `gt-start' method. Create other translate
+commands in the same way using your creativity.
+
+If ARG is not nil, translate with translator select by `gt-preset-translators'.
+
+(fn &optional ARG)" t)
+(register-definition-prefixes "gt" '("gt-"))
+
+
+
+(autoload 'gt-speak "gt-core" "\
+Speak content around point.
+
+If the text under point or with selection has `gt-task' or `gt-tts-url'
+property, try to speak it with current translation engine.
+
+Otherwise try to TTS with native program or using selected engine.
+
+Switch engine with key `C-n'.
+
+When TTS with specific engine, you can specify the language with `lang.' prefix." t)
+(register-definition-prefixes "gt-core" '("gt-"))
+
+
+
+(register-definition-prefixes "gt-engine-bing" '("gt-bing-"))
+
+
+
+(register-definition-prefixes "gt-engine-chatgpt" '("gt-chatgpt-"))
+
+
+
+(register-definition-prefixes "gt-engine-deepl" '("gt-deepl-"))
+
+
+
+(register-definition-prefixes "gt-engine-echo" '("gt-"))
+
+
+
+(register-definition-prefixes "gt-engine-google" '("gt-google-"))
+
+
+
+(register-definition-prefixes "gt-engine-google-rpc" '("gt-google-rpc-"))
+
+
+
+(register-definition-prefixes "gt-engine-libre" '("gt-libre-"))
+
+
+
+(register-definition-prefixes "gt-engine-osxdict" '("gt-osxdict-"))
+
+
+
+(register-definition-prefixes "gt-engine-stardict" '("gt-stardict-"))
+
+
+
+(register-definition-prefixes "gt-engine-youdao" '("gt-youdao-"))
+
+
+
+(register-definition-prefixes "gt-faces" '("gt-p"))
+
+
+
+(register-definition-prefixes "gt-render-alert" '("gt-alert-render"))
+
+
+
+(register-definition-prefixes "gt-render-buffer" '("gt-buffer-"))
+
+
+
+(register-definition-prefixes "gt-render-insert" '("gt-insert-render"))
+
+
+
+(register-definition-prefixes "gt-render-kill-ring" '("gt-kill-ring-render"))
+
+
+
+(register-definition-prefixes "gt-render-overlay" '("gt-"))
+
+
+
+(register-definition-prefixes "gt-render-posframe" '("gt-posframe-"))
+
+
+
+(register-definition-prefixes "gt-taker-buffer-prompt" '("gt-buffer-prompt-"))
+
+
+
+(register-definition-prefixes "gt-taker-fresh-words" '("gt-"))
+
+
+
+(autoload 'gt-qrcode "gt-text-utility" "\
+Genrate QR Code for STR.
+
+(fn STR)" t)
+(register-definition-prefixes "gt-text-utility" '("gt-text-"))
+
+
+(provide 'gt-autoloads)
+
+
+)
 (let* ((load-file-name "/home/libcyz/.emacs.d/elpa/flycheck-20260902.1403/flycheck-autoloads.el")(load-true-file-name load-file-name))
 
 
@@ -5261,9 +5585,9 @@ shadow backends that come after it.  Recommended usages:
        (append
 	'(yasnippet compat cond-let llama with-editor transient
 		    spinner rich-minority smart-mode-line s rust-mode
-		    posframe markdown-mode magit-section magit lv dash
-		    f ht lsp-mode lsp-ui flycheck drag-stuff dashboard
-		    company catppuccin-theme)
+		    posframe pdd markdown-mode magit-section magit lv
+		    dash f ht lsp-mode lsp-ui gt flycheck drag-stuff
+		    dashboard company catppuccin-theme)
 	package-activated-list)))
 (progn
   (require 'info) (info-initialize)

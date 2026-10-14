@@ -80,5 +80,24 @@
   :ensure t
   :commands lsp-ui-mode)
 
+;; 翻译：选中英文后按 C-c t，译文在侧边窗口显示（没有选中时翻译光标处的单词）
+(use-package gt
+  :bind ("C-c t" . gt-translate)
+  :config
+  (setq gt-langs '(en zh)
+        gt-default-translator
+        (gt-translator :engines (gt-bing-engine)
+                       :render (gt-buffer-render))))
+
+;; M-x 等小缓冲区补全：内置 fido，竖向列表 + 模糊匹配，输入 gtr 就能匹配 gt-translate
+(use-package icomplete
+  :ensure nil
+  :hook (after-init . fido-vertical-mode))
+
+;; 记住 M-x 历史，常用命令排在前面
+(use-package savehist
+  :ensure nil
+  :hook (after-init . savehist-mode))
+
 
 (provide 'init-package)
