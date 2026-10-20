@@ -1053,6 +1053,207 @@ Other supported arguments are the same as the generic `pdd' method." (let* ((arg
 
 
 )
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/modus-themes-5.3.0/modus-themes-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "modus-operandi-deuteranopia-theme" '("modus-operandi-deuteranopia-palette-"))
+
+
+
+(register-definition-prefixes "modus-operandi-theme" '("modus-operandi-palette-"))
+
+
+
+(register-definition-prefixes "modus-operandi-tinted-theme" '("modus-operandi-tinted-palette-"))
+
+
+
+(register-definition-prefixes "modus-operandi-tritanopia-theme" '("modus-operandi-tritanopia-palette-"))
+
+
+
+(autoload 'modus-themes-contrast "modus-themes" "\
+Measure WCAG contrast ratio between COLOR-1 and COLOR-2.
+Color values are of the form accepted by `modus-themes-wcag-formula'.
+
+(fn COLOR-1 COLOR-2)")
+(autoload 'modus-themes-activate "modus-themes" "\
+Load THEME if neeeded, so that it can be used by other commands.
+
+(fn THEME)")
+(autoload 'modus-themes-select "modus-themes" "\
+Load a Modus THEME using minibuffer completion.
+With optional prefix argument, prompt to limit the set of themes to
+either dark or light variants.
+
+Run `modus-themes-after-load-theme-hook' after loading the theme.
+Disable other themes per `modus-themes-disable-other-themes'.
+
+(fn THEME)" t)
+(autoload 'modus-themes-select-dark "modus-themes" "\
+Like `modus-themes-select' for a dark THEME.
+
+(fn THEME)" t)
+(autoload 'modus-themes-select-light "modus-themes" "\
+Like `modus-themes-select' for a light THEME.
+
+(fn THEME)" t)
+(autoload 'modus-themes-toggle "modus-themes" "\
+Toggle between the two `modus-themes-to-toggle'.
+If `modus-themes-to-toggle' does not specify two Modus themes,
+prompt with completion for a theme among our collection (this is
+practically the same as the `modus-themes-select' command).
+
+Run `modus-themes-after-load-theme-hook' after loading the theme.
+Disable other themes per `modus-themes-disable-other-themes'." t)
+(function-put 'modus-themes-toggle 'interactive-only 't)
+(autoload 'modus-themes-rotate "modus-themes" "\
+Rotate to the next theme among THEMES.
+When called interactively THEMES is the value of `modus-themes-to-rotate'
+and REVERSE is the prefix argument.
+
+If the current theme is already the next in line, then move to the one
+after.  The rotation is performed rightwards if REVERSE is nil (the
+default), and leftwards if REVERSE is non-nil.  Perform the rotation
+such that the current element in the list becomes the last.  Do not
+modify THEMES in the process.
+
+(fn THEMES &optional REVERSE)" t)
+(autoload 'modus-themes-load-random "modus-themes" "\
+Load a Modus theme at random, excluding the current one.
+
+With optional BACKGROUND-MODE as a prefix argument, prompt to limit the
+set of themes to either dark or light variants.  When called from Lisp,
+BACKGROUND-MODE is either the `dark' or `light' symbol.
+
+Run `modus-themes-after-load-theme-hook' after loading a theme.
+
+(fn &optional BACKGROUND-MODE)" t)
+(autoload 'modus-themes-load-random-dark "modus-themes" "\
+Load a random dark theme." t)
+(function-put 'modus-themes-load-random-dark 'interactive-only 't)
+(autoload 'modus-themes-load-random-light "modus-themes" "\
+Load a random light theme." t)
+(function-put 'modus-themes-load-random-light 'interactive-only 't)
+(autoload 'modus-themes-theme "modus-themes" "\
+Define a Modus theme or derivative thereof.
+NAME is the name of the new theme.  FAMILY is the collection of themes
+it belongs to.  DESCRIPTION is its documentation string.
+BACKGROUND-MODE is either `dark' or `light', in reference to the theme's
+background color.  The CORE-PALETTE, USER-PALETTE, and OVERRIDES-PALETTE
+are symbols of variables which define palettes commensurate with
+`modus-themes-operandi-palette'.
+
+The optional CUSTOM-FACES and CUSTOM-VARIABLES are joined together with
+the `modus-themes-faces' and `modus-themes-custom-variables',
+respectively.  A derivative theme defining those is thus overriding what
+the Modus themes have by default.
+
+Consult the manual for details on how to build a theme on top of the
+`modus-themes': Info node `(modus-themes) Build on top of the Modus themes'.
+
+(fn NAME FAMILY DESCRIPTION BACKGROUND-MODE CORE-PALETTE USER-PALETTE OVERRIDES-PALETTE &optional CUSTOM-FACES CUSTOM-VARIABLES)")
+(defvar modus-themes-include-derivatives-mode nil "\
+Non-nil if Modus-Themes-Include-Derivatives mode is enabled.
+See the `modus-themes-include-derivatives-mode' command
+for a description of this minor mode.")
+(custom-autoload 'modus-themes-include-derivatives-mode "modus-themes" nil)
+(autoload 'modus-themes-include-derivatives-mode "modus-themes" "\
+When enabled, all Modus themes commands cover derivatives as well.
+
+Otherwise, they only consider the `modus-themes-items'.
+
+Derivative theme projects can implement the equivalent of this minor
+mode plus a method for `modus-themes-get-themes' to filter themes
+accordingly.
+
+This is a global minor mode.  If called interactively, toggle the
+`Modus-Themes-Include-Derivatives mode' mode.  If the prefix argument is
+positive, enable the mode, and if it is zero or negative, disable the
+mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='modus-themes-include-derivatives-mode)'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t)
+(autoload 'modus-themes-generate-palette "modus-themes" "\
+Generate a palette given the BASE-COLORS.
+BASE-COLORS consists of lists in the form (NAME VALUE).  NAME is at
+least a symbol of `bg-main' or `fg-main', while VALUE is a string
+representing a color either by name like in `list-colors-display' or
+hexadecimal RGB of the form #123456.  See the value of a core Modus
+palette, like `modus-themes-operandi-palette' for all current NAME
+symbols.
+
+BASE-COLORS is used to derive a palette.  Any entry whose name is
+already present in BASE-COLORS is not derived but taken as-is.  The rest
+are generated automatically.  The generated palette can be used as-is by
+a derivative theme (per `modus-themes-theme') or as a starting point for
+further refinements.
+
+With optional COOL-OR-WARM-PREFERENCE as a symbol of either `cool' or
+`warm' make relevant color choices for derivative values.  If
+COOL-OR-WARM-PREFERENCE is nil, derive the implied preference from the
+value of the `bg-main' color in BASE-COLORS.  If the value of `bg-main'
+satisfies `color-gray-p', then fall back to `cool'.  For our purposes,
+`cool' means that the color is closer to pure blue than pure red, while
+`warm' is the opposite.
+
+With optional CORE-PALETTE use it to fill in any of the remaining
+entries.  This can be a symbol like `modus-themes-operandi-palette'.  Do
+not try to enforce a core palette among those defined in modus-themes.el
+and let the user assume responsibility for any incompatibilities.  If
+CORE-PALETTE is nil, then infer a suitable palette based on whether the
+`bg-main' value in BASE-COLORS is light or dark and then the
+COOL-OR-WARM-PREFERENCE.  This inferred palette will be
+`modus-themes-operandi-palette' for a light `bg-main' and
+`modus-themes-vivendi-palette' for a dark `bg-main'.  The `cool' or
+`warm' shall yield the tinted variants of those palettes, namely,
+`modus-themes-operandi-tinted-palette' and
+`modus-themes-vivendi-tinted-palette'.
+
+With optional MAPPINGS use them instead of trying to derive new ones.
+If MAPPINGS is nil, generate some essential color mappings and let the
+rest come from CORE-PALETTE.
+
+(fn BASE-COLORS &optional COOL-OR-WARM-PREFERENCE CORE-PALETTE MAPPINGS)")
+(when load-file-name (let ((dir (file-name-directory load-file-name))) (unless (equal dir (expand-file-name "themes/" data-directory)) (add-to-list 'custom-theme-load-path dir))))
+(register-definition-prefixes "modus-themes" '("modus-themes-"))
+
+
+
+(register-definition-prefixes "modus-vivendi-deuteranopia-theme" '("modus-vivendi-deuteranopia-palette-"))
+
+
+
+(register-definition-prefixes "modus-vivendi-theme" '("modus-vivendi-palette-"))
+
+
+
+(register-definition-prefixes "modus-vivendi-tinted-theme" '("modus-vivendi-tinted-palette-"))
+
+
+
+(register-definition-prefixes "modus-vivendi-tritanopia-theme" '("modus-vivendi-tritanopia-palette-"))
+
+
+(provide 'modus-themes-autoloads)
+
+
+)
 (let* ((load-file-name "/home/libcyz/.emacs.d/elpa/markdown-mode-20260827.909/markdown-mode-autoloads.el")(load-true-file-name load-file-name))
 
 
@@ -5153,6 +5354,215 @@ mode.
 
 
 )
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/ef-themes-2.2.1/ef-themes-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "ef-arbutus-theme" '("ef-arbutus-palette"))
+
+
+
+(register-definition-prefixes "ef-arcadia-theme" '("ef-arcadia-palette"))
+
+
+
+(register-definition-prefixes "ef-atlantis-theme" '("ef-atlantis-palette"))
+
+
+
+(register-definition-prefixes "ef-autumn-theme" '("ef-autumn-palette"))
+
+
+
+(register-definition-prefixes "ef-bio-theme" '("ef-bio-palette"))
+
+
+
+(register-definition-prefixes "ef-cherie-theme" '("ef-cherie-palette"))
+
+
+
+(register-definition-prefixes "ef-cyprus-theme" '("ef-cyprus-palette"))
+
+
+
+(register-definition-prefixes "ef-dark-theme" '("ef-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-day-theme" '("ef-day-palette"))
+
+
+
+(register-definition-prefixes "ef-deuteranopia-dark-theme" '("ef-deuteranopia-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-deuteranopia-light-theme" '("ef-deuteranopia-light-palette"))
+
+
+
+(register-definition-prefixes "ef-dream-theme" '("ef-dream-palette"))
+
+
+
+(register-definition-prefixes "ef-duo-dark-theme" '("ef-duo-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-duo-light-theme" '("ef-duo-light-palette"))
+
+
+
+(register-definition-prefixes "ef-eagle-theme" '("ef-eagle-palette"))
+
+
+
+(register-definition-prefixes "ef-elea-dark-theme" '("ef-elea-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-elea-light-theme" '("ef-elea-light-palette"))
+
+
+
+(register-definition-prefixes "ef-fig-theme" '("ef-fig-palette"))
+
+
+
+(register-definition-prefixes "ef-frost-theme" '("ef-frost-palette"))
+
+
+
+(register-definition-prefixes "ef-kassio-theme" '("ef-kassio-palette"))
+
+
+
+(register-definition-prefixes "ef-light-theme" '("ef-light-palette"))
+
+
+
+(register-definition-prefixes "ef-maris-dark-theme" '("ef-maris-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-maris-light-theme" '("ef-maris-light-palette"))
+
+
+
+(register-definition-prefixes "ef-melissa-dark-theme" '("ef-melissa-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-melissa-light-theme" '("ef-melissa-light-palette"))
+
+
+
+(register-definition-prefixes "ef-night-theme" '("ef-night-palette"))
+
+
+
+(register-definition-prefixes "ef-orange-theme" '("ef-orange-palette"))
+
+
+
+(register-definition-prefixes "ef-owl-theme" '("ef-owl-palette"))
+
+
+
+(register-definition-prefixes "ef-reverie-theme" '("ef-reverie-palette"))
+
+
+
+(register-definition-prefixes "ef-rosa-theme" '("ef-rosa-palette"))
+
+
+
+(register-definition-prefixes "ef-spring-theme" '("ef-spring-palette"))
+
+
+
+(register-definition-prefixes "ef-summer-theme" '("ef-summer-palette"))
+
+
+
+(register-definition-prefixes "ef-symbiosis-theme" '("ef-symbiosis-palette"))
+
+
+
+(defvar ef-themes-take-over-modus-themes-mode nil "\
+Non-nil if Ef-Themes-Take-Over-Modus-Themes mode is enabled.
+See the `ef-themes-take-over-modus-themes-mode' command
+for a description of this minor mode.")
+(custom-autoload 'ef-themes-take-over-modus-themes-mode "ef-themes" nil)
+(autoload 'ef-themes-take-over-modus-themes-mode "ef-themes" "\
+When enabled, all Modus themes commands consider only Ef themes.
+
+Alternatively, use the commands `ef-themes-rotate', `ef-themes-select',
+`ef-themes-load-random', `ef-themes-load-random-dark',
+`ef-themes-load-random-light', `ef-themes-list-colors',
+`ef-themes-list-colors-current'.  They are all designed to only consider
+Ef themes.
+
+This is a global minor mode.  If called interactively, toggle the
+`Ef-Themes-Take-Over-Modus-Themes mode' mode.  If the prefix argument is
+positive, enable the mode, and if it is zero or negative, disable the
+mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='ef-themes-take-over-modus-themes-mode)'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t)
+ (autoload 'ef-themes-toggle "ef-themes")
+ (autoload 'ef-themes-rotate "ef-themes")
+ (autoload 'ef-themes-select "ef-themes")
+ (autoload 'ef-themes-select-dark "ef-themes")
+ (autoload 'ef-themes-select-light "ef-themes")
+ (autoload 'ef-themes-load-random "ef-themes")
+ (autoload 'ef-themes-load-random-dark "ef-themes")
+ (autoload 'ef-themes-load-random-light "ef-themes")
+ (autoload 'ef-themes-list-colors "ef-themes")
+ (autoload 'ef-themes-list-colors-current "ef-themes")
+(when load-file-name (let ((dir (file-name-directory load-file-name))) (unless (file-equal-p dir (expand-file-name "themes/" data-directory)) (add-to-list 'custom-theme-load-path dir))))
+(register-definition-prefixes "ef-themes" '("ef-themes-"))
+
+
+
+(register-definition-prefixes "ef-trio-dark-theme" '("ef-trio-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-trio-light-theme" '("ef-trio-light-palette"))
+
+
+
+(register-definition-prefixes "ef-tritanopia-dark-theme" '("ef-tritanopia-dark-palette"))
+
+
+
+(register-definition-prefixes "ef-tritanopia-light-theme" '("ef-tritanopia-light-palette"))
+
+
+
+(register-definition-prefixes "ef-winter-theme" '("ef-winter-palette"))
+
+
+(provide 'ef-themes-autoloads)
+
+
+)
 (let* ((load-file-name "/home/libcyz/.emacs.d/elpa/drag-stuff-20161108.749/drag-stuff-autoloads.el")(load-true-file-name load-file-name))
 
 
@@ -5579,23 +5989,106 @@ shadow backends that come after it.  Recommended usages:
 
 
 )
+(let* ((load-file-name "/home/libcyz/.emacs.d/elpa/au-themes/au-themes-autoloads.el")(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "au-aurum-day-theme" '("au-aurum-day-palette"))
+
+
+
+(register-definition-prefixes "au-aurum-night-theme" '("au-aurum-night-palette"))
+
+
+
+(register-definition-prefixes "au-herbarium-day-theme" '("au-herbarium-day-palette"))
+
+
+
+(register-definition-prefixes "au-herbarium-night-theme" '("au-herbarium-night-palette"))
+
+
+
+(register-definition-prefixes "au-parchment-day-theme" '("au-parchment-day-"))
+
+
+
+(register-definition-prefixes "au-parchment-night-theme" '("au-parchment-night-"))
+
+
+
+(register-definition-prefixes "au-salina-day-theme" '("au-salina-day-palette"))
+
+
+
+(register-definition-prefixes "au-salina-night-theme" '("au-salina-night-palette"))
+
+
+
+(autoload 'au-themes-toggle "au-themes" "\
+Toggle between a light and a dark theme from `au-themes'.
+Alternates between the last selected light and dark themes, defaulting
+to `au-themes-toggle-themes'." t)
+(autoload 'au-themes-select "au-themes" "\
+Select and enable a theme from `au-themes' collection with live preview.
+Themes are grouped into Light and Dark categories.
+With optional THEME symbol, load it directly without prompting.
+
+(fn &optional THEME)" t)
+(autoload 'au-themes-select-light "au-themes" "\
+Select and enable a light theme from `au-themes' collection with live preview.
+With optional THEME symbol, load it directly without prompting.
+
+(fn &optional THEME)" t)
+(autoload 'au-themes-select-dark "au-themes" "\
+Select and enable a dark theme from `au-themes' collection with live preview.
+With optional THEME symbol, load it directly without prompting.
+
+(fn &optional THEME)" t)
+(register-definition-prefixes "au-themes" '("au-themes-"))
+
+
+
+(register-definition-prefixes "au-whispergrove-day-theme" '("au-whispergrove-day-palette"))
+
+
+
+(register-definition-prefixes "au-whispergrove-morning-theme" '("au-whispergrove-morning-palette"))
+
+
+
+(register-definition-prefixes "au-whispergrove-night-theme" '("au-whispergrove-night-palette"))
+
+
+(provide 'au-themes-autoloads)
+
+
+)
 (defvar package-activated-list)
 (setq package-activated-list
       (delete-dups
        (append
 	'(yasnippet compat cond-let llama with-editor transient
 		    spinner rich-minority smart-mode-line s rust-mode
-		    posframe pdd markdown-mode magit-section magit lv
-		    dash f ht lsp-mode lsp-ui gt flycheck drag-stuff
-		    dashboard company catppuccin-theme)
+		    posframe pdd modus-themes markdown-mode
+		    magit-section magit lv dash f ht lsp-mode lsp-ui
+		    gt flycheck ef-themes drag-stuff dashboard company
+		    catppuccin-theme au-themes)
 	package-activated-list)))
 (progn
   (require 'info) (info-initialize)
   (setq Info-directory-list
 	(append
-	 '("/home/libcyz/.emacs.d/elpa/dash-20260221.1346"
+	 '("/home/libcyz/.emacs.d/elpa/ef-themes-2.2.1"
+	   "/home/libcyz/.emacs.d/elpa/dash-20260221.1346"
 	   "/home/libcyz/.emacs.d/elpa/magit-20261005.508"
 	   "/home/libcyz/.emacs.d/elpa/magit-section-20260926.1436"
+	   "/home/libcyz/.emacs.d/elpa/modus-themes-5.3.0"
 	   "/home/libcyz/.emacs.d/elpa/transient-20261001.1359"
 	   "/home/libcyz/.emacs.d/elpa/with-editor-20261003.1832"
 	   "/home/libcyz/.emacs.d/elpa/compat-31.1.0.0")
