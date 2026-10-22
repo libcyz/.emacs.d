@@ -1,29 +1,5 @@
-# Packages and native-comp cache
-elpa/
-eln-cache/
-
-# Autosave, lockfiles, backups
-auto-save-list/
+# 备份、锁文件、编译产物
 *~
 \#*\#
 .\#*
-
-# Byte-compiled
 *.elc
-
-# Emacs runtime junk
-recentf
-tramp
-url/
-var/
-ido.last
-amx-items
-smex-items
-projectile-bookmarks.eld
-.org-id-locations
-places
-custom.el
-.cache
-eshell/
-.lsp-session-v1
-transient/

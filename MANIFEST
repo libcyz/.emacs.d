@@ -1,0 +1,4 @@
+# 每行：仓库里的文件|操作|链接到 $HOME 下的哪个目录（空 = $HOME 本身）
+.emacs|symlink|
+.emacs.rc|symlink|
+early-init.el|symlink|.emacs.d
