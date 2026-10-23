@@ -25,12 +25,6 @@
   (dolist (package packages)
     (rc/require-one-package package)))
 
-;; 不在软件源里、只能从 git 装的包：(rc/require-vc 'foo "https://github.com/x/foo.el")
-(defun rc/require-vc (package url)
-  (when (not (package-installed-p package))
-    (rc/package-refresh-contents-once)
-    (package-vc-install (list package :url url))))
-
 ;; (rc/require-theme 'gruber-darker) 会装 gruber-darker-theme 并加载
 (defun rc/require-theme (theme)
   (rc/require (intern (concat (symbol-name theme) "-theme")))

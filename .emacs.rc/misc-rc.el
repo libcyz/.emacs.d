@@ -16,8 +16,6 @@
 
 ;; 剪贴板：Linux 上通过 wl-copy / xclip 与系统剪贴板同步（文本经 stdin 传入）
 ;; Windows 用 Emacs 自带的剪贴板支持，不需要这段
-(setq select-enable-clipboard t)
-
 (defun rc/clipboard-copy-command ()
   (cond ((executable-find "wl-copy") '("wl-copy"))
         ((executable-find "xclip") '("xclip" "-selection" "clipboard"))))

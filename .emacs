@@ -6,14 +6,10 @@
 (load "~/.emacs.rc/misc-rc.el")
 
 ;;; Appearance
-(defun rc/set-font (&optional _frame)
-  (when (find-font (font-spec :family "Iosevka"))
-    (set-face-attribute 'default nil :font "Iosevka-20")))
+;; 打开时的窗口大小：宽 120 列，高 40 行
+(add-to-list 'default-frame-alist '(width . 120))
+(add-to-list 'default-frame-alist '(height . 40))
 
-(rc/set-font)
-(add-hook 'after-make-frame-functions #'rc/set-font)   ; emacs --daemon 下新建的窗口
-
-(setq inhibit-startup-screen t)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
@@ -36,14 +32,14 @@
 (load "~/.emacs.rc/dashboard-rc.el")
 
 ;;; Indentation
-;; 缩进只用空格；遇到别人文件里的 Tab 按 4 列宽显示
-(setq-default indent-tabs-mode nil
+;; 缩进用 Tab，一个 Tab 显示为 4 列宽
+(setq-default indent-tabs-mode t
               tab-width 4)
 (setq-default c-basic-offset 4)
 (setq c-ts-mode-indent-offset 4)
 
 ;;; tree-sitter：语法高亮改用 *-ts-mode（grammar 装了才切换）
-;; 级别越高识别越细（1-4），颜色由主题决定
+
 (setq treesit-font-lock-level 3)
 
 (dolist (remap '((c . ((c-mode . c-ts-mode)
@@ -168,16 +164,6 @@
       (gt-translator :engines (gt-bing-engine)
                      :render (gt-buffer-render)))
 (global-set-key (kbd "C-c t") 'gt-translate)
-
-;;; Claude Code：C-c C-' 打开菜单，在 Emacs 里运行官方 claude 命令行
-;; 终端用 eat（纯 Elisp，不用编译）；通过 MCP 读 flycheck 诊断、xref、treesit，改动用 ediff 审查
-(rc/require 'eat)
-(rc/require-vc 'claude-code-ide "https://github.com/manzaltu/claude-code-ide.el")
-(require 'claude-code-ide)
-
-(setq claude-code-ide-terminal-backend 'eat)
-(claude-code-ide-emacs-tools-setup)
-(global-set-key (kbd "C-c C-'") 'claude-code-ide-menu)
 
 (when (file-exists-p custom-file)
   (load custom-file nil t))
